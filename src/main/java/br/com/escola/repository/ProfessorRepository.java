@@ -6,4 +6,6 @@ import br.com.escola.dto.ProfessorDTO;
 
 public interface ProfessorRepository extends JpaRepository<ProfessorDTO, Long>{
 
+	ProfessorDTO findByCpf(String cpf);
+	
 }
