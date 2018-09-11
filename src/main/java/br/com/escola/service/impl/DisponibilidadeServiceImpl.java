@@ -19,7 +19,13 @@ public class DisponibilidadeServiceImpl implements DisponibilidadeService {
 	public DisponibilidadeDTO save(DisponibilidadeDTO dia) {
 		findAll().forEach(diaSalvo -> {
 			if (dia.getDia().equals(diaSalvo.getDia())) {
-				dia.setDisponibilidadeId(diaSalvo.getDisponibilidadeId());
+				if (dia.getHoraInicio().equals(diaSalvo.getHoraInicio())
+						&& dia.getHoraFinal().equals(diaSalvo.getHoraFinal())) {
+					dia.setDisponibilidadeId(diaSalvo.getDisponibilidadeId());
+				} else {
+					if(dia.getHoraInicio().compareTo(diaSalvo.getHoraInicio()) < 0) dia.setHoraInicio(diaSalvo.getHoraInicio());
+					if(dia.getHoraFinal().compareTo(diaSalvo.getHoraInicio()) > 0) dia.setHoraFinal(diaSalvo.getHoraFinal());
+				}
 			}
 		});
 		return disponibilidadeRepository.save(dia);
@@ -29,5 +35,5 @@ public class DisponibilidadeServiceImpl implements DisponibilidadeService {
 	public List<DisponibilidadeDTO> findAll() {
 		return disponibilidadeRepository.findAll();
 	}
-	
+
 }
