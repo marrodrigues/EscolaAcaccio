@@ -5,7 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.com.escola.dto.DisponibilidadeDTO;
+import br.com.escola.model.Disponibilidade;
+import br.com.escola.model.Professor;
 import br.com.escola.repository.DisponibilidadeRepository;
 import br.com.escola.service.DisponibilidadeService;
 
@@ -16,15 +17,11 @@ public class DisponibilidadeServiceImpl implements DisponibilidadeService {
 	private DisponibilidadeRepository disponibilidadeRepository;
 
 	@Override
-	public DisponibilidadeDTO save(DisponibilidadeDTO dia) {
+	public Disponibilidade save(Disponibilidade dia) {
 		findAll().forEach(diaSalvo -> {
 			if (dia.getDia().equals(diaSalvo.getDia())) {
-				if (dia.getHoraInicio().equals(diaSalvo.getHoraInicio())
-						&& dia.getHoraFinal().equals(diaSalvo.getHoraFinal())) {
-					dia.setDisponibilidadeId(diaSalvo.getDisponibilidadeId());
-				} else {
-					if(dia.getHoraInicio().compareTo(diaSalvo.getHoraInicio()) < 0) dia.setHoraInicio(diaSalvo.getHoraInicio());
-					if(dia.getHoraFinal().compareTo(diaSalvo.getHoraInicio()) > 0) dia.setHoraFinal(diaSalvo.getHoraFinal());
+				if(dia.getTempo().getCodigo().equals(diaSalvo.getTempo().getCodigo())) {
+					return;
 				}
 			}
 		});
@@ -32,8 +29,13 @@ public class DisponibilidadeServiceImpl implements DisponibilidadeService {
 	}
 
 	@Override
-	public List<DisponibilidadeDTO> findAll() {
+	public List<Disponibilidade> findAll() {
 		return disponibilidadeRepository.findAll();
+	}
+	
+	@Override
+	public void removeByProfessorId(Professor professorId) {
+		disponibilidadeRepository.removeByProfessorId(professorId);
 	}
 
 }

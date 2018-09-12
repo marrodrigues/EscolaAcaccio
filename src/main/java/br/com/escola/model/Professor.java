@@ -1,4 +1,4 @@
-package br.com.escola.dto;
+package br.com.escola.model;
 
 import java.io.Serializable;
 import java.util.List;
@@ -18,7 +18,7 @@ import lombok.Data;
 @Entity
 @Table(name = "Professor")
 @Data
-public class ProfessorDTO implements Serializable {
+public class Professor implements Serializable {
 	
 	/**
 	 * 
@@ -36,6 +36,6 @@ public class ProfessorDTO implements Serializable {
 	@Column(name = "materia", nullable = false)
 	private String materia;
 	@OneToMany(mappedBy = "professorId", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	private List<DisponibilidadeDTO> disponibilidade;
+	private List<Disponibilidade> disponibilidade;
 	
 }

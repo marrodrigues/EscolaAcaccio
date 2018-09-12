@@ -1,4 +1,4 @@
-package br.com.escola.dto.enumeration;
+package br.com.escola.model.enumeration;
 
 public enum DiaSemanaEnum {
 

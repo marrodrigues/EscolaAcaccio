@@ -5,8 +5,8 @@ public class MaxDisponibilidadeException extends Exception {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 6968302754312192684L;
-	
+	private static final long serialVersionUID = -1238850975495071897L;
+
 	public MaxDisponibilidadeException () {
 		super();
 	}

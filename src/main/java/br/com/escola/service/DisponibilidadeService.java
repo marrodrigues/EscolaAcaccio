@@ -2,12 +2,15 @@ package br.com.escola.service;
 
 import java.util.List;
 
-import br.com.escola.dto.DisponibilidadeDTO;
+import br.com.escola.model.Disponibilidade;
+import br.com.escola.model.Professor;
 
 public interface DisponibilidadeService {
 
-	DisponibilidadeDTO save(DisponibilidadeDTO dia);
+	Disponibilidade save(Disponibilidade dia);
 
-	List<DisponibilidadeDTO> findAll();
+	List<Disponibilidade> findAll();
+
+	void removeByProfessorId(Professor professorId);
 
 }
