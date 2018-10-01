@@ -10,8 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.escola.model.Disponibilidade;
+import br.com.escola.model.Materia;
+import br.com.escola.model.Periodo;
 import br.com.escola.model.Professor;
-import br.com.escola.model.enumeration.DiaSemanaEnum;
+import br.com.escola.repository.PeriodoRepository;
 import br.com.escola.repository.ProfessorRepository;
 import br.com.escola.service.DisponibilidadeService;
 import br.com.escola.service.ProfessorService;
@@ -25,6 +27,9 @@ public class ProfessorServiceImpl implements ProfessorService {
 
 	@Autowired
 	private DisponibilidadeService disponibilidadeService;
+	
+	@Autowired
+	private PeriodoRepository periodoRepository;
 
 	@Override
 	public List<Professor> getAll() {
@@ -33,9 +38,11 @@ public class ProfessorServiceImpl implements ProfessorService {
 
 	@Override
 	public Professor save(Professor professorDTO) throws MaxDisponibilidadeException {
-		Map<String, DiaSemanaEnum> DisponibilidadeMap = new HashMap<String, DiaSemanaEnum>();
+		Map<Integer, Integer> DisponibilidadeMap = new HashMap<Integer, Integer>();
 		professorDTO.getDisponibilidade().forEach(dia -> {
-			DisponibilidadeMap.put(dia.getDia().name(), dia.getDia());
+			if(dia.getPeriods().size() > 0) {
+				DisponibilidadeMap.put(dia.getDay(), dia.getDay());
+			}
 		});
 
 		if (DisponibilidadeMap.size() > 3) {
@@ -49,7 +56,7 @@ public class ProfessorServiceImpl implements ProfessorService {
 			professorDTO.setProfessorId(professor.getProfessorId());
 
 			if (professorDTO.getDisponibilidade().size() > 0) {
-				professor = saveProfessorAndDisponibilidade(professorDTO);
+				professor = saveProfessorMateriaDisponibilidade(professorDTO);
 			} else {
 				professor = professorRepository.save(professorDTO);
 			}
@@ -59,7 +66,7 @@ public class ProfessorServiceImpl implements ProfessorService {
 		} else {
 
 			if (professorDTO.getDisponibilidade().size() > 0) {
-				professor = saveProfessorAndDisponibilidade(professorDTO);
+				professor = saveProfessorMateriaDisponibilidade(professorDTO);
 			} else {
 				professor = professorRepository.save(professorDTO);
 			}
@@ -69,16 +76,23 @@ public class ProfessorServiceImpl implements ProfessorService {
 		return professor;
 	}
 
-	private Professor saveProfessorAndDisponibilidade(Professor professorDTO) {
-		List<Disponibilidade> disponibilidade;
+	private Professor saveProfessorMateriaDisponibilidade(Professor professorDTO) {
+		List<Disponibilidade> disponibilidade = new ArrayList<Disponibilidade>(professorDTO.getDisponibilidade());
 		Professor professor;
-		disponibilidade = new ArrayList<Disponibilidade>(professorDTO.getDisponibilidade());
 		professorDTO.getDisponibilidade().clear();
 		professor = professorRepository.save(professorDTO);
 		disponibilidadeService.removeByProfessorId(professor);
 		disponibilidade.forEach(dia -> {
+			List<Periodo> periodo = new ArrayList<>(dia.getPeriods());
+			dia.getPeriods().clear();
 			dia.setProfessorId(professorDTO);
-			professorDTO.getDisponibilidade().add(disponibilidadeService.save(dia));
+			Disponibilidade save = disponibilidadeService.save(dia);
+			periodo.forEach(period -> {
+				period.setDisponibilidadeId(save);
+				period = periodoRepository.save(period);
+				dia.getPeriods().add(period);
+			});
+			professor.getDisponibilidade().add(dia);
 		});
 		return professor;
 	}

@@ -10,8 +10,12 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
 
@@ -33,8 +37,10 @@ public class Professor implements Serializable {
 	private String cpf;
 	@Column(name = "nome", nullable = false)
 	private String nome;
-	@Column(name = "materia", nullable = false)
-	private String materia;
+	@ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "materia_id", nullable = false)
+	private Materia materiaId;
+	@Column(name = "disponibilidade", nullable = false)
 	@OneToMany(mappedBy = "professorId", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<Disponibilidade> disponibilidade;
 	

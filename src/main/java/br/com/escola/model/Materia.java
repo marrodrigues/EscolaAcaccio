@@ -19,28 +19,27 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
 
-@Entity
-@Table(name = "Disponibilidade")
+
 @Data
-public class Disponibilidade implements Serializable{
-	
+@Entity
+@Table(name = "Materia")
+public class Materia implements Serializable{
+
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -1118288507077198793L;
+	private static final long serialVersionUID = 6328051596981578050L;
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "disponibilidade_id")
-	private Integer disponibilidadeId;
+	@Column(name = "materia_id")
+	private Integer materiaId;
 	@JsonIgnore
-	@ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "professor_id", nullable = false)
-	private Professor professorId;
-	@Column(name = "dia")
-	private Integer day;
-	@OneToMany(mappedBy = "disponibilidadeId", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@Column(name = "periods")
-	private List<Periodo> periods;
-	
+	@OneToMany(mappedBy = "materiaId", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<Professor> professores;
+	@Column(name = "materia", nullable = false)
+	private String materia;
+	@Column(name = "tempo", nullable = false)
+	private Integer tempo;
+
 }

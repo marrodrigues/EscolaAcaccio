@@ -2,7 +2,6 @@ package br.com.escola.controller;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,51 +14,45 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import br.com.escola.model.Materia;
 import br.com.escola.model.Professor;
+import br.com.escola.service.MateriaService;
 import br.com.escola.service.ProfessorService;
 import br.com.escola.service.exception.MaxDisponibilidadeException;
 
 @RestController
 @RequestMapping("/api/")
-public class ProfessorController {
+public class MateriaController {
 
 	@Autowired
-	private ProfessorService professorService;
+	private MateriaService materiaService;
 
-	@GetMapping(value = "professor")
-	public ResponseEntity listarProfessores() {
-		List<Professor> all = professorService.getAll();
+	@GetMapping(value = "materia")
+	public ResponseEntity listarMaterias() {
+		List<Materia> all = materiaService.getAll();
 		return ResponseEntity.ok(all);
 	}
 	
-	@GetMapping(value = "professor/{cpf}")
-	public ResponseEntity buscarProfessorCPF(@PathVariable("cpf") String cpf) {
-		try {
-			Professor professor = professorService.findByCpf(cpf);
-			if(Objects.isNull(professor)) {
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Professor inexistente");
-			}
-			return ResponseEntity.ok(professor);
-		}catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(e.getMessage());
-		}
+	@GetMapping(value = "materia/{materiaId}")
+	public ResponseEntity buscarMateria(@PathVariable("materiaId") Integer materiaId) {
+		Materia materia = materiaService.findById(materiaId);
+		return ResponseEntity.ok(materia);
 	}
 
-	@PostMapping(value = "professor")
-	public ResponseEntity criarProfessor(@RequestBody Professor professorDTO) {
+	@PostMapping(value = "materia")
+	public ResponseEntity criarMateria(@RequestBody Materia materia) {
 		
 		try {
-			professorDTO = professorService.save(professorDTO);
-		} catch (MaxDisponibilidadeException e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+			materia = materiaService.save(materia);
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(e.getMessage());
 		}
 
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-				.buildAndExpand(professorDTO.getProfessorId()).toUri();
+				.buildAndExpand(materia.getMateriaId()).toUri();
 
 		return ResponseEntity.created(uri).build();
 		
 	}
+	
 }
