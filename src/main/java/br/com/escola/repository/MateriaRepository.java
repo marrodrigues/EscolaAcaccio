@@ -9,5 +9,5 @@ public interface MateriaRepository extends JpaRepository<Materia, Long>{
 	Materia findByMateria(String materia);
 
 	Materia findByMateriaId(Integer materiaId);
-	
+
 }

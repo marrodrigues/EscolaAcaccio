@@ -10,8 +10,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -34,6 +33,8 @@ public class Materia implements Serializable{
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "materia_id")
 	private Integer materiaId;
+	@Column(name = "codigo_materia", nullable = false)
+	private String codigo;
 	@JsonIgnore
 	@OneToMany(mappedBy = "materiaId", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<Professor> professores;
@@ -41,5 +42,7 @@ public class Materia implements Serializable{
 	private String materia;
 	@Column(name = "tempo", nullable = false)
 	private Integer tempo;
-
+	@JsonIgnore
+	@ManyToMany(mappedBy = "materias", cascade = CascadeType.ALL)
+	private List<Turma> turmas;
 }

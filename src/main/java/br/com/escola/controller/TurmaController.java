@@ -1,7 +1,6 @@
 package br.com.escola.controller;
 
 import java.net.URI;
-import java.util.List;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,53 +15,54 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import br.com.escola.model.Professor;
-import br.com.escola.service.ProfessorService;
+import br.com.escola.model.Turma;
+import br.com.escola.service.MateriaService;
+import br.com.escola.service.TurmaService;
 import br.com.escola.service.exception.MaxDisponibilidadeException;
 import br.com.escola.service.exception.MinDisponibilidadeException;
 
 @RestController
 @RequestMapping("/api/")
-public class ProfessorController {
+public class TurmaController {
 
 	@Autowired
-	private ProfessorService professorService;
-
-	@GetMapping(value = "professor")
-	public ResponseEntity listarProfessores() {
-		List<Professor> all = professorService.getAll();
-		return ResponseEntity.ok(all);
+	private TurmaService turmaService;
+	
+	@Autowired
+	private MateriaService materia;
+	
+	@GetMapping(value = "turma")
+	public ResponseEntity listarTurmas() {
+		return ResponseEntity.status(HttpStatus.OK).body(turmaService.getAll());
 	}
 	
-	@GetMapping(value = "professor/{cpf}")
-	public ResponseEntity buscarProfessorCPF(@PathVariable("cpf") String cpf) {
+	@GetMapping(value = "turma/{codigo}")
+	public ResponseEntity buscarTurmaCodigo(@PathVariable("codigo") String codigo) {
 		try {
-			Professor professor = professorService.findByCpf(cpf);
-			if(Objects.isNull(professor)) {
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Professor inexistente");
+			Turma turma = turmaService.findByCodigo(codigo);
+			if(Objects.isNull(turma)) {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Turma inexistente");
 			}
-			return ResponseEntity.ok(professor);
+			return ResponseEntity.ok(turma);
 		}catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(e.getMessage());
 		}
 	}
-
-	@PostMapping(value = "professor")
-	public ResponseEntity criarProfessor(@RequestBody Professor professorDTO) {
+	
+	@PostMapping(value = "turma")
+	public ResponseEntity criarProfessor(@RequestBody Turma turma) {
 		
 		try {
-			professorDTO = professorService.save(professorDTO);
-		} catch (MinDisponibilidadeException e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-		} catch (MaxDisponibilidadeException e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+			turma = turmaService.save(turma);
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(e.getMessage());
 		}
 
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-				.buildAndExpand(professorDTO.getProfessorId()).toUri();
+				.buildAndExpand(turma.getTurmaId()).toUri();
 
 		return ResponseEntity.created(uri).build();
 		
 	}
+	
 }

@@ -18,6 +18,7 @@ import br.com.escola.repository.ProfessorRepository;
 import br.com.escola.service.DisponibilidadeService;
 import br.com.escola.service.ProfessorService;
 import br.com.escola.service.exception.MaxDisponibilidadeException;
+import br.com.escola.service.exception.MinDisponibilidadeException;
 
 @Service
 public class ProfessorServiceImpl implements ProfessorService {
@@ -35,19 +36,24 @@ public class ProfessorServiceImpl implements ProfessorService {
 	public List<Professor> getAll() {
 		return professorRepository.findAll();
 	}
+	
+	@Override
+	public Professor findByCpf(String cpf) {
+		return professorRepository.findByCpf(cpf);
+	}
 
 	@Override
-	public Professor save(Professor professorDTO) throws MaxDisponibilidadeException {
+	public Professor save(Professor professorDTO) throws MaxDisponibilidadeException, MinDisponibilidadeException {
 		Map<Integer, Integer> DisponibilidadeMap = new HashMap<Integer, Integer>();
-		professorDTO.getDisponibilidade().forEach(dia -> {
+		Integer tempos = 0;
+		for(Disponibilidade dia :professorDTO.getDisponibilidade()){
 			if(dia.getPeriods().size() > 0) {
 				DisponibilidadeMap.put(dia.getDay(), dia.getDay());
 			}
-		});
-
-		if (DisponibilidadeMap.size() > 3) {
-			throw new MaxDisponibilidadeException("O Professor pode lecionar no maximo em 3 dias.");
+			tempos += dia.getPeriods().size();
 		}
+		if(tempos < 4) throw new MinDisponibilidadeException("O Professor precisa ter disponibilidade de no minimo em 4 tempos.");
+		if (DisponibilidadeMap.size() > 3) throw new MaxDisponibilidadeException("O Professor pode lecionar no maximo em 3 dias.");
 
 		Professor professor = findByCpf(professorDTO.getCpf());
 
@@ -61,8 +67,6 @@ public class ProfessorServiceImpl implements ProfessorService {
 				professor = professorRepository.save(professorDTO);
 			}
 
-			return professor;
-
 		} else {
 
 			if (professorDTO.getDisponibilidade().size() > 0) {
@@ -74,6 +78,7 @@ public class ProfessorServiceImpl implements ProfessorService {
 		}
 
 		return professor;
+		
 	}
 
 	private Professor saveProfessorMateriaDisponibilidade(Professor professorDTO) {
@@ -95,11 +100,6 @@ public class ProfessorServiceImpl implements ProfessorService {
 			professor.getDisponibilidade().add(dia);
 		});
 		return professor;
-	}
-
-	@Override
-	public Professor findByCpf(String cpf) {
-		return professorRepository.findByCpf(cpf);
 	}
 
 }
