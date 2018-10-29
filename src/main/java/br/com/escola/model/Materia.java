@@ -43,6 +43,6 @@ public class Materia implements Serializable{
 	@Column(name = "tempo", nullable = false)
 	private Integer tempo;
 	@JsonIgnore
-	@ManyToMany(mappedBy = "materias", cascade = CascadeType.ALL)
+	@ManyToMany(mappedBy = "materias")
 	private List<Turma> turmas;
 }

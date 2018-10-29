@@ -6,6 +6,8 @@ import br.com.escola.model.Materia;
 
 public interface MateriaRepository extends JpaRepository<Materia, Long>{
 
+	Materia findByCodigo(String codigo);
+	
 	Materia findByMateria(String materia);
 
 	Materia findByMateriaId(Integer materiaId);

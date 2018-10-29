@@ -36,7 +36,9 @@ public class Turma implements Serializable {
 	private Integer creditos;
 	@Column(name = "codigo_turma", nullable = false)
 	private String codigo;
-	@ManyToMany(cascade = CascadeType.ALL)
+	@Column(name = "serie", nullable = false)
+	private String serie;
+	@ManyToMany
 	@JoinTable(name = "turma_materia", joinColumns = @JoinColumn(name = "turma_id"), inverseJoinColumns = @JoinColumn(name = "materia_id"))
 	private List<Materia> materias;
 	

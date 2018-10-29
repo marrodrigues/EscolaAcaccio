@@ -28,7 +28,7 @@ public class MateriaServiceImpl implements MateriaService{
 	
 	@Override
 	public Materia save(Materia materia) {
-		Materia findByMateria = materiaRepository.findByMateria(materia.getMateria());
+		Materia findByMateria = materiaRepository.findByCodigo(materia.getCodigo());
 		if(!Objects.isNull(findByMateria) && findByMateria.getCodigo().equals(materia.getCodigo())) {
 			materia.setMateriaId(findByMateria.getMateriaId());
 		}
